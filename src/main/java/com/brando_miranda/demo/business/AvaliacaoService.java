@@ -19,12 +19,12 @@ public class AvaliacaoService {
     
         }
 
-        public Avaliacao createAvaliacao(Avaliacao avaliacao) {
+        public Avaliacao create(Avaliacao avaliacao) {
             return avaliacaoRepository.save(avaliacao);
 
         }
 
-        public List<Avaliacao> listAllAvaliacao(){
+        public List<Avaliacao> listAll(){
             return avaliacaoRepository.findAll();
         }
 
@@ -33,7 +33,7 @@ public class AvaliacaoService {
 
        }
 
-       public Avaliacao updateAvaliacao(String id,Avaliacao avaliacaoDetails) {
+       public Avaliacao update(String id,Avaliacao avaliacaoDetails) {
         Avaliacao avaliacao = avaliacaoRepository.findById(id).orElse(null);
         if(avaliacao != null) {
             avaliacao.setName(avaliacaoDetails.getName());
@@ -44,7 +44,7 @@ public class AvaliacaoService {
     
        }
 
-       public void deleteAvaliacao(@PathVariable String id){
+       public void delete(@PathVariable String id){
           avaliacaoRepository.deleteById(id);
        }
 
