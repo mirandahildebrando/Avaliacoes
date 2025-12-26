@@ -21,16 +21,21 @@ public class AvaliacaoService {
     
         }
 
-        public Avaliacao create(AvaliacaoRequest dto){ 
-            return avaliacaoRepository.save(
-                Avaliacao.builder()
-                .name(dto.name())
-                .nota(dto.nota())
-                .comentario(dto.comentario())
-                .build()
-            ) ;
-
-        }
+        public AvaliacaoResponse create(AvaliacaoRequest request) {
+     Avaliacao entidade = Avaliacao.builder()
+            .name(request.name())
+            .nota(request.nota())
+            .comentario(request.comentario())
+            .build();
+    Avaliacao salva = avaliacaoRepository.save(entidade);
+    return new AvaliacaoResponse(
+        salva.getId(), 
+        salva.getName(), 
+        salva.getNota(), 
+        salva.getComentario(), 
+        salva.getDataPub()
+    );
+}
 
         public List<AvaliacaoResponse> listAll() {
         return avaliacaoRepository.findAll().stream()
