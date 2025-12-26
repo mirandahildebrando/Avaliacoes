@@ -34,7 +34,7 @@ public class AvaliacaoController {
     }
 
     @PostMapping
-    public ResponseEntity<Avaliacao> create(@RequestBody @Valid AvaliacaoRequest dto) {
+    public ResponseEntity<Avaliacao> create(@Valid @RequestBody AvaliacaoRequest dto) {
         Avaliacao createdAvaliacao = avaliacaoService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAvaliacao);
     }
