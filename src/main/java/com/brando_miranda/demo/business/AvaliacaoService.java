@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.brando_miranda.demo.DTOs.AvaliacaoRequest;
+import com.brando_miranda.demo.DTOs.AvaliacaoResponse;
 import com.brando_miranda.demo.model.Avaliacao;
 import com.brando_miranda.demo.repository.AvaliacaoRepository;
 
@@ -19,28 +21,49 @@ public class AvaliacaoService {
     
         }
 
-        public Avaliacao create(Avaliacao avaliacao) {
-            return avaliacaoRepository.save(avaliacao);
+        public Avaliacao create(AvaliacaoRequest dto){ 
+            return avaliacaoRepository.save(
+                Avaliacao.builder()
+                .name(dto.name())
+                .nota(dto.nota())
+                .comentario(dto.comentario())
+                .build()
+            ) ;
 
         }
 
-        public List<Avaliacao> listAll(){
-            return avaliacaoRepository.findAll();
+        public List<AvaliacaoResponse> listAll() {
+        return avaliacaoRepository.findAll().stream()
+        .map(this::convertToResponse) 
+        .toList();
         }
 
-        public Optional<Avaliacao> getUserById(String id) {
-        return avaliacaoRepository.findById(id);
+        public Optional<AvaliacaoResponse> getById(String id) {
+        return avaliacaoRepository.findById(id)
+        .map(this::convertToResponse);
+         }
 
-       }
+         private AvaliacaoResponse convertToResponse(Avaliacao avaliacao) {
+            return new AvaliacaoResponse(
+                avaliacao.getId(),
+                avaliacao.getName(),
+                avaliacao.getNota(),
+                avaliacao.getComentario(),
+                avaliacao.getDataPub()
+            );
+         }
 
-       public Avaliacao update(String id,Avaliacao avaliacaoDetails) {
-        Avaliacao avaliacao = avaliacaoRepository.findById(id).orElse(null);
-        if(avaliacao != null) {
-            avaliacao.setName(avaliacaoDetails.getName());
-            avaliacao.setNota(avaliacaoDetails.getNota());
-            avaliacao.setComentario(avaliacaoDetails.getComentario());
-            avaliacao.setDataPub(avaliacaoDetails.getDataPub());
-        } return null;
+
+
+       public Avaliacao update(String id, AvaliacaoRequest dto) {
+         return avaliacaoRepository.findById(id)
+         .map(existente -> {
+            existente.setName(dto.name());
+            existente.setNota(dto.nota());
+            existente.setComentario(dto.comentario());
+            return avaliacaoRepository.save(existente);
+         })
+         .orElseThrow(() -> new RuntimeException("Avaliação não encontrada"));
     
        }
 

@@ -2,11 +2,18 @@ package com.brando_miranda.demo.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.brando_miranda.demo.DTOs.AvaliacaoRequest;
+import com.brando_miranda.demo.DTOs.AvaliacaoResponse;
 import com.brando_miranda.demo.business.AvaliacaoService;
 import com.brando_miranda.demo.model.Avaliacao;
 
+
+import jakarta.validation.Valid;
+
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,24 +34,38 @@ public class AvaliacaoController {
     }
 
     @PostMapping
-    public Avaliacao create(@RequestBody Avaliacao avaliacao) {
-        return avaliacaoService.create(avaliacao);
+    public ResponseEntity<Avaliacao> create(@RequestBody @Valid AvaliacaoRequest dto) {
+        Avaliacao createdAvaliacao = avaliacaoService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdAvaliacao);
     }
 
     @GetMapping
-    public List<Avaliacao> getAll() {
-        return avaliacaoService.listAll();
+    public ResponseEntity<List<AvaliacaoResponse>> getAll() { 
+        List<AvaliacaoResponse> lista = avaliacaoService.listAll();
+        return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<AvaliacaoResponse> getById(@PathVariable String id) {
+        return avaliacaoService.getById(id)
+                .map(avaliacao -> ResponseEntity.ok(avaliacao)) 
+                .orElse(ResponseEntity.notFound().build());  
     }
 
     @PutMapping("/{id}")
-    public Avaliacao update(@PathVariable String id, @RequestBody Avaliacao avaliacao) {
-        return avaliacaoService.update(id, avaliacao);
-
+    public ResponseEntity<Avaliacao> update(@PathVariable String id, @RequestBody @Valid AvaliacaoRequest dto) {
+        try {
+            Avaliacao atualizada = avaliacaoService.update(id, dto);
+            return ResponseEntity.ok(atualizada);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable String id) {
         avaliacaoService.delete(id);
+        return ResponseEntity.noContent().build();
     }
     
 
